@@ -1,0 +1,32 @@
+/* ========================================
+   ICÔNES & SYMBOLES UNICODE
+   Uniquement des émojis natifs - Aucune ressource externe
+   ======================================== */
+
+/* Styles pour les icônes emoji dans les pages */
+.icon {
+  display: inline-block;
+  font-style: normal;
+  font-size: 1.2em;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.icon-lg {
+  font-size: 2em;
+}
+
+.icon-xl {
+  font-size: 3em;
+}
+
+/* Animation subtile pour les icônes au hover */
+.icon-hover:hover {
+  display: inline-block;
+  animation: icon-bounce 0.5s ease;
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
