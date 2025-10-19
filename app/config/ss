@@ -1,0 +1,19 @@
+
+
+
+
+
+
+integre et genere le code correctement les fonctionnalites suivantes dans notre app, maintient le meme style de code flightPHP, voici le cahier des charges:
+Nom de la fonctionnalité : Rapports et dashboard
+Objectif : Fournir statistiques d’activité et satisfaction.
+Description détaillée : Temps moyen résolution, nombre tickets par statut et période, satisfaction moyenne par agent, budget consommé.
+Priorité : Haute.
+
+Contraintes techniques générales :
+
+Tous clients et agents sont stockés uniquement dans ta base de données locale.
+Coût horaire des agents est unique et stocké en configuration.
+L’API Dolibarr sert uniquement à créer/synchroniser les tickets, pas les clients ou agents.
+Toute la logique métier (budget, échanges, statuts, évaluations) est gérée dans FlightPHP suivant architecture MVC.
+Configurer URL Dolibarr et API key dans un fichier de configuration dédié.
