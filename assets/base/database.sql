@@ -1,14 +1,8 @@
--- ===========================
--- BASE DE DONNÉES : LOI DE FINANCES ACCESSIBLE
--- ===========================
-
 CREATE DATABASE IF NOT EXISTS loi_de_finance;
 USE loi_de_finance;
 
--- ===========================
--- 1. TABLE ANNEE
--- ===========================
-CREATE TABLE annee (
+-- Tables existantes (non modifiées, mais incluses pour contexte)
+CREATE TABLE IF NOT EXISTS annee (
   id INT AUTO_INCREMENT PRIMARY KEY,
   annee YEAR NOT NULL,
   pib DECIMAL(15,2),
@@ -17,34 +11,19 @@ CREATE TABLE annee (
   taux_pression_fiscale DECIMAL(5,2)
 );
 
--- ===========================
--- 2. TABLE CATEGORIE_RECETTE
--- ===========================
-CREATE TABLE categorie_recette (
+CREATE TABLE IF NOT EXISTS categorie_recette (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nom VARCHAR(150) NOT NULL,
   description TEXT NULL
 );
 
--- Exemples :
--- Impôt sur le revenu, TVA, Droits de douane, Dividendes, Dons projets...
-
--- ===========================
--- 3. TABLE CATEGORIE_DEPENSE
--- ===========================
-CREATE TABLE categorie_depense (
+CREATE TABLE IF NOT EXISTS categorie_depense (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nom VARCHAR(150) NOT NULL,
   description TEXT NULL
 );
 
--- Exemples :
--- Présidence, Sénat, Santé Publique, Travaux Publics, Éducation, etc.
-
--- ===========================
--- 4. TABLE RECETTE
--- ===========================
-CREATE TABLE recette (
+CREATE TABLE IF NOT EXISTS recette (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_annee INT NOT NULL,
   id_categorie INT NOT NULL,
@@ -54,10 +33,7 @@ CREATE TABLE recette (
   FOREIGN KEY (id_categorie) REFERENCES categorie_recette(id)
 );
 
--- ===========================
--- 5. TABLE DEPENSE
--- ===========================
-CREATE TABLE depense (
+CREATE TABLE IF NOT EXISTS depense (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_annee INT NOT NULL,
   id_categorie INT NOT NULL,
@@ -67,10 +43,7 @@ CREATE TABLE depense (
   FOREIGN KEY (id_categorie) REFERENCES categorie_depense(id)
 );
 
--- ===========================
--- 6. TABLE DEFICIT
--- ===========================
-CREATE TABLE deficit (
+CREATE TABLE IF NOT EXISTS deficit (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_annee INT NOT NULL,
   montant_total DECIMAL(15,2) NOT NULL,
@@ -79,13 +52,100 @@ CREATE TABLE deficit (
   FOREIGN KEY (id_annee) REFERENCES annee(id)
 );
 
--- ===========================
--- 7. TABLE DISPOSITION_FISCALE
--- ===========================
-CREATE TABLE disposition_fiscale (
+CREATE TABLE IF NOT EXISTS disposition_fiscale (
   id INT AUTO_INCREMENT PRIMARY KEY,
   id_annee INT NOT NULL,
   type VARCHAR(100),
   description TEXT,
   FOREIGN KEY (id_annee) REFERENCES annee(id)
+);
+
+-- Nouvelles tables ajoutées pour couvrir les données manquantes du document
+
+-- ===========================
+-- TABLE SECTEUR (pour gérer les secteurs et sous-secteurs économiques : primaire, secondaire, tertiaire, et leurs détails comme agriculture, industrie extractive, etc.)
+-- ===========================
+CREATE TABLE IF NOT EXISTS secteur (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(150) NOT NULL,
+  type ENUM('primaire', 'secondaire', 'tertiaire') NULL, -- Pour classer les secteurs principaux
+  parent_id INT NULL, -- Pour les sous-secteurs (référence à un secteur parent)
+  description TEXT NULL,
+  FOREIGN KEY (parent_id) REFERENCES secteur(id)
+);
+
+-- ===========================
+-- TABLE CROISSANCE_SECTEUR (pour stocker les taux de croissance par secteur/sous-secteur et par année, y compris projections futures)
+-- ===========================
+CREATE TABLE IF NOT EXISTS croissance_secteur (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_annee INT NOT NULL,
+  id_secteur INT NOT NULL,
+  taux DECIMAL(5,2) NOT NULL,
+  FOREIGN KEY (id_annee) REFERENCES annee(id),
+  FOREIGN KEY (id_secteur) REFERENCES secteur(id)
+);
+
+-- ===========================
+-- TABLE PROJET_INVESTISSEMENT (pour les détails des programmes d'investissements publics : PIP, projets spécifiques en énergie, agriculture, infrastructures, etc.)
+-- ===========================
+CREATE TABLE IF NOT EXISTS projet_investissement (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_annee INT NOT NULL,
+  nom VARCHAR(255) NOT NULL, -- Ex: "Mandraka III", "Pipeline Efaho"
+  description TEXT NULL, -- Détails sur le projet
+  id_categorie_depense INT NULL, -- Lien optionnel vers une catégorie de dépense (ex: ministère concerné)
+  montant DECIMAL(15,2) NULL,
+  source_financement ENUM('interne', 'externe', 'mixte') NOT NULL,
+  secteur VARCHAR(150) NULL, -- Ex: "Énergie", "Agriculture", "Infrastructures"
+  FOREIGN KEY (id_annee) REFERENCES annee(id),
+  FOREIGN KEY (id_categorie_depense) REFERENCES categorie_depense(id)
+);
+
+-- ===========================
+-- TABLE DETTE (pour les détails sur la dette : intérêts, principal, intérieure/extérieure)
+-- ===========================
+CREATE TABLE IF NOT EXISTS dette (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_annee INT NOT NULL,
+  type ENUM('interieure', 'exterieure') NOT NULL,
+  interets DECIMAL(15,2) NOT NULL,
+  principal DECIMAL(15,2) NULL, -- Optionnel pour les projections
+  taux_moyen DECIMAL(5,2) NULL, -- Ex: taux d'intérêt moyen pondéré
+  FOREIGN KEY (id_annee) REFERENCES annee(id)
+);
+
+-- ===========================
+-- TABLE POSTE_BUDGETAIRE (pour les postes budgétaires autorisés : emplois créés par ministère/institution)
+-- ===========================
+CREATE TABLE IF NOT EXISTS poste_budgetaire (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_annee INT NOT NULL,
+  id_categorie_depense INT NOT NULL, -- Lien vers le ministère/institution
+  nombre INT NOT NULL, -- Nombre de postes (ex: 3000 pour Éducation Nationale)
+  description TEXT NULL, -- Ex: "À recruter par voie de concours"
+  FOREIGN KEY (id_annee) REFERENCES annee(id),
+  FOREIGN KEY (id_categorie_depense) REFERENCES categorie_depense(id)
+);
+
+-- ===========================
+-- TABLE INDICATEUR_MACRO (pour les indicateurs macroéconomiques supplémentaires : solde global, taux de change, taux d'investissement public/privé, etc.)
+-- ===========================
+CREATE TABLE IF NOT EXISTS indicateur_macro (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_annee INT NOT NULL,
+  nom VARCHAR(150) NOT NULL, -- Ex: "Solde global (base caisse)", "Taux de change Dollars/Ariary"
+  valeur DECIMAL(15,2) NOT NULL,
+  unite VARCHAR(50) NULL, -- Ex: "% PIB", "Ariary"
+  FOREIGN KEY (id_annee) REFERENCES annee(id)
+);
+
+-- ===========================
+-- TABLE GLOSSAIRE (pour acronymes et définitions : combine acronymes et glossaire du document)
+-- ===========================
+CREATE TABLE IF NOT EXISTS glossaire (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  terme VARCHAR(100) NOT NULL, -- Ex: "PIB", "Souveraineté alimentaire"
+  definition TEXT NOT NULL,
+  type ENUM('acronyme', 'terme') NOT NULL -- Pour distinguer acronymes et glossaire
 );

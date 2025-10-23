@@ -1,3 +1,22 @@
+.brand-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.nav-links .pdf-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+}
+
+.nav-links .pdf-link:hover {
+  background: rgba(255,255,255,0.15);
+}
+
 /* ========================================
    LOI DE FINANCES - Design Professionnel
    ======================================== */
@@ -107,10 +126,8 @@ body {
   transform: scale(1.02);
 }
 
-.brand::before {
-  content: '⚖️';
-  font-size: 1.75rem;
-}
+/* remove decorative emoji before brand */
+.brand::before { content: none; }
 
 .nav-links {
   display: flex;
@@ -130,15 +147,8 @@ body {
   gap: var(--space-2);
 }
 
-.nav-links a::before {
-  font-size: 1.1rem;
-}
-
-.nav-links a:nth-child(1)::before { content: '🏛️'; }
-.nav-links a:nth-child(2)::before { content: '💰'; }
-.nav-links a:nth-child(3)::before { content: '💸'; }
-.nav-links a:nth-child(4)::before { content: '📋'; }
-.nav-links a:nth-child(5)::before { content: '🔄'; }
+/* remove decorative emoji before nav links */
+.nav-links a::before { content: none; }
 
 .nav-links a:hover {
   background: rgba(255, 255, 255, 0.15);
@@ -172,11 +182,8 @@ h1 {
   gap: var(--space-3);
 }
 
-h1::before {
-  content: '📊';
-  font-size: 2.5rem;
-  -webkit-text-fill-color: initial;
-}
+/* remove decorative emoji before h1 */
+h1::before { content: none; }
 
 h2 {
   font-size: 1.75rem;
@@ -214,10 +221,28 @@ section.tables {
 }
 
 section.charts {
-  min-height: 400px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.charts canvas {
+  max-height: 360px;
+}
+
+.table-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+}
+
+.table-actions .pager {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
 }
 
 .card {
@@ -252,11 +277,8 @@ label::before {
   font-size: 1.1rem;
 }
 
-.filters label:nth-of-type(1)::before,
-.filters label:has(#year)::before { content: '📅'; }
-.filters label:nth-of-type(2)::before,
-.filters label:has(#type)::before { content: '🏷️'; }
-.filters label:has(#dataset)::before { content: '📊'; }
+/* remove decorative emoji before labels */
+.filters label::before { content: none; }
 
 select, input {
   width: 100%;
@@ -309,14 +331,8 @@ th {
   white-space: nowrap;
 }
 
-th::before {
-  margin-right: var(--space-2);
-  font-size: 1rem;
-}
-
-th:nth-child(1)::before { content: '📌'; }
-th:nth-child(2)::before { content: '💵'; }
-th:nth-child(3)::before { content: '🏷️'; }
+/* remove decorative emoji before table headers */
+th::before { content: none; }
 
 thead tr th:first-child {
   border-top-left-radius: var(--radius-lg);
@@ -435,10 +451,7 @@ tbody tr:last-child td:last-child {
   z-index: 1;
 }
 
-.hero h1::before {
-  font-size: 3.5rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
+.hero h1::before { content: none; }
 
 .hero p {
   font-size: 1.25rem;
@@ -473,13 +486,8 @@ tbody tr:last-child td:last-child {
   box-shadow: var(--shadow-lg);
 }
 
-.cta-links a::before {
-  font-size: 1.25rem;
-}
-
-.cta-links a:nth-child(1)::before { content: '💰'; }
-.cta-links a:nth-child(2)::before { content: '💸'; }
-.cta-links a:nth-child(3)::before { content: '📋'; }
+/* remove decorative emoji before CTA links */
+.cta-links a::before { content: none; }
 
 .cta-links a::after {
   content: '→';
@@ -537,11 +545,8 @@ tbody tr:last-child td:last-child {
   transform: translateY(-4px);
 }
 
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: var(--space-4);
-  opacity: 0.9;
-}
+/* feature icon container without emoji */
+.feature-icon { display: none; }
 
 .feature-card h3 {
   color: var(--gray-900);

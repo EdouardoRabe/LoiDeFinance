@@ -1,6 +1,7 @@
 <?php $pageTitle = 'Dépenses — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
     <link rel="stylesheet" href="assets/css/tooltip.css">
     <h1>Dépenses</h1>
+    <p class="section-desc">Visualisez la répartition des dépenses publiques par type et par catégorie budgétaire. Les montants reflètent les prévisions et allocations indiquées dans la Loi de Finances.</p>
     <section class="filters">
       <label>Année <select id="year"></select></label>
       <label>Type <select id="type"><option value="">Toutes</option></select></label>

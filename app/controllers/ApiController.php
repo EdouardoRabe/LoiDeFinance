@@ -111,4 +111,112 @@ class ApiController
         $rows = Flight::budgetModel()->getDepensesCompareMulti($annees, $type);
         Flight::json($rows);
     }
+
+    // ==========================
+    // Extensions API (schéma étendu)
+    // ==========================
+
+    public static function secteurs()
+    {
+        $parentId = Flight::request()->query['parent_id'] ?? null;
+        $parentId = $parentId !== null && $parentId !== '' ? (int)$parentId : null;
+        $rows = Flight::budgetModel()->getSecteurs($parentId);
+        Flight::json($rows);
+    }
+
+    public static function croissanceSecteur()
+    {
+        $annee = (int)(Flight::request()->query['annee'] ?? 2025);
+        $secteurId = Flight::request()->query['secteur_id'] ?? null;
+        $secteurId = $secteurId !== null && $secteurId !== '' ? (int)$secteurId : null;
+        $rows = Flight::budgetModel()->getCroissanceSecteur($annee, $secteurId);
+        Flight::json($rows);
+    }
+
+    public static function projets()
+    {
+        $annee = (int)(Flight::request()->query['annee'] ?? 2025);
+        $secteur = Flight::request()->query['secteur'] ?? null;
+        $source = Flight::request()->query['source'] ?? null; // interne|externe|mixte
+        $categorie = Flight::request()->query['categorie'] ?? null;
+        $categorie = $categorie ? (int)$categorie : null;
+        $q = Flight::request()->query['q'] ?? null;
+        $sort = Flight::request()->query['sort'] ?? null; // nom|montant|source_financement|secteur
+        $rows = Flight::budgetModel()->getProjetsInvestissement($annee, $secteur, $source, $categorie, $q, $sort);
+        Flight::json($rows);
+    }
+
+    public static function dette()
+    {
+        $annee = (int)(Flight::request()->query['annee'] ?? 2025);
+        $type = Flight::request()->query['type'] ?? null; // interieure|exterieure
+        $rows = Flight::budgetModel()->getDette($annee, $type);
+        Flight::json($rows);
+    }
+
+    public static function compareDette()
+    {
+        $annee1 = (int)(Flight::request()->query['annee1'] ?? 2024);
+        $annee2 = (int)(Flight::request()->query['annee2'] ?? 2025);
+        $rows = Flight::budgetModel()->compareDette($annee1, $annee2);
+        Flight::json($rows);
+    }
+
+    public static function postes()
+    {
+        $annee = (int)(Flight::request()->query['annee'] ?? 2025);
+        $categorie = Flight::request()->query['categorie'] ?? null;
+        $categorie = $categorie ? (int)$categorie : null;
+        $rows = Flight::budgetModel()->getPostesBudgetaires($annee, $categorie);
+        Flight::json($rows);
+    }
+
+    public static function indicateurs()
+    {
+        $annee = (int)(Flight::request()->query['annee'] ?? 2025);
+        $q = Flight::request()->query['q'] ?? null;
+        $rows = Flight::budgetModel()->getIndicateursMacro($annee, $q);
+        Flight::json($rows);
+    }
+
+    public static function indicateursSerie()
+    {
+        $annees = Flight::request()->query['annee'] ?? [];
+        if (!is_array($annees)) { $annees = [$annees]; }
+        $annees = array_values(array_unique(array_map('intval', $annees)));
+        $noms = Flight::request()->query['nom'] ?? [];
+        if (!is_array($noms)) { $noms = [$noms]; }
+        $rows = Flight::budgetModel()->getIndicateursSerie($noms, $annees);
+        Flight::json($rows);
+    }
+
+    public static function glossaire()
+    {
+        $q = Flight::request()->query['q'] ?? null;
+        $type = Flight::request()->query['type'] ?? null; // acronyme|terme
+        $rows = Flight::budgetModel()->getGlossaire($q, $type);
+        Flight::json($rows);
+    }
+
+    public static function searchRecettes()
+    {
+        $annee = Flight::request()->query['annee'] ?? null; $annee = $annee !== null && $annee !== '' ? (int)$annee : null;
+        $type = Flight::request()->query['type'] ?? null;
+        $categorie = Flight::request()->query['categorie'] ?? null; $categorie = $categorie ? (int)$categorie : null;
+        $q = Flight::request()->query['q'] ?? null;
+        $sort = Flight::request()->query['sort'] ?? null;
+        $rows = Flight::budgetModel()->searchRecettes($annee, $type, $categorie, $q, $sort);
+        Flight::json($rows);
+    }
+
+    public static function searchDepenses()
+    {
+        $annee = Flight::request()->query['annee'] ?? null; $annee = $annee !== null && $annee !== '' ? (int)$annee : null;
+        $type = Flight::request()->query['type'] ?? null;
+        $categorie = Flight::request()->query['categorie'] ?? null; $categorie = $categorie ? (int)$categorie : null;
+        $q = Flight::request()->query['q'] ?? null;
+        $sort = Flight::request()->query['sort'] ?? null;
+        $rows = Flight::budgetModel()->searchDepenses($annee, $type, $categorie, $q, $sort);
+        Flight::json($rows);
+    }
 }

@@ -27,6 +27,19 @@ $router->get('/api/recettes-compare-multi', [ApiController::class, 'recettesComp
 $router->get('/api/depenses-compare-multi', [ApiController::class, 'depensesCompareMulti']);
 $router->get('/api/health', [ApiController::class, 'health']);
 
+// Extensions API (schéma étendu)
+$router->get('/api/secteurs', [ApiController::class, 'secteurs']);
+$router->get('/api/croissance-secteur', [ApiController::class, 'croissanceSecteur']);
+$router->get('/api/projets', [ApiController::class, 'projets']);
+$router->get('/api/dette', [ApiController::class, 'dette']);
+$router->get('/api/compare-dette', [ApiController::class, 'compareDette']);
+$router->get('/api/postes', [ApiController::class, 'postes']);
+$router->get('/api/indicateurs', [ApiController::class, 'indicateurs']);
+$router->get('/api/indicateurs-serie', [ApiController::class, 'indicateursSerie']);
+$router->get('/api/glossaire', [ApiController::class, 'glossaire']);
+$router->get('/api/search-recettes', [ApiController::class, 'searchRecettes']);
+$router->get('/api/search-depenses', [ApiController::class, 'searchDepenses']);
+
 // Page d'accueil minimaliste (consommera l'API via JS)
 $router->get('/', function() use ($app) {
 	$app->render('home.php');
@@ -47,4 +60,28 @@ $router->get('/dispositions', function() use ($app) {
 // Page de comparaison multi-années
 $router->get('/comparaison', function() use ($app) {
 	$app->render('comparaison.php');
+});
+
+$router->get('/secteurs', function() use ($app) {
+	$app->render('secteurs.php');
+});
+
+$router->get('/projets', function() use ($app) {
+	$app->render('projets.php');
+});
+
+$router->get('/dette', function() use ($app) {
+	$app->render('dette.php');
+});
+
+$router->get('/postes', function() use ($app) {
+	$app->render('postes.php');
+});
+
+$router->get('/indicateurs', function() use ($app) {
+	$app->render('indicateurs.php');
+});
+
+$router->get('/glossaire', function() use ($app) {
+	$app->render('glossaire.php');
 });

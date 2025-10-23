@@ -39,10 +39,30 @@ function load() {
         labels,
         datasets: [{
           data,
-          backgroundColor: ['#2d6cdf', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+          backgroundColor: ['#2d6cdf', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'],
+          borderWidth: 0,
+          hoverOffset: 6
         }]
       },
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: 10 },
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const total = ctx.dataset.data.reduce((a,b)=>a+Number(b||0),0);
+                const val = Number(ctx.parsed) || 0;
+                const pct = total ? (val*100/total) : 0;
+                return `${ctx.label}: ${fmt(val)} (${pct.toFixed(1)}%)`;
+              }
+            }
+          }
+        },
+        animation: { duration: 500, easing: 'easeOutQuart' }
+      }
     });
   });
 }
