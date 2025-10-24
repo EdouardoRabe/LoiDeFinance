@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS loi_de_finance;
 CREATE DATABASE IF NOT EXISTS loi_de_finance;
 USE loi_de_finance;
 
