@@ -12,8 +12,12 @@ function loadTypes() {
   const annee = $('#year').val();
   return $.getJSON('api/depense-types', { annee }).then(list => {
     const $t = $('#type');
-    $t.find('option:not([value=""])').remove();
-    list.forEach(v => $t.append(`<option value="${v}">${v}</option>`));
+    $t.find('option:not([value=""]').remove();
+    list.forEach(item => {
+      const v = (item && typeof item === 'object') ? item.value : item;
+      const label = (item && typeof item === 'object') ? item.label : item;
+      $t.append(`<option value="${v}">${label}</option>`);
+    });
   });
 }
 

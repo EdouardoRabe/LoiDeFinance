@@ -1,24 +1,23 @@
-<?php $pageTitle = 'Glossaire — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-  <h1>Glossaire</h1>
-  <p class="section-desc">Recherchez les acronymes et termes utilisés dans la Loi de Finances. Utilisez le filtre de type pour distinguer entre acronymes et définitions générales.</p>
+<?php $pageTitle = (function_exists('t') ? t('page.glossaire.title') : 'Glossaire') . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+  <h1><?= htmlspecialchars(function_exists('t') ? t('page.glossaire.title') : 'Glossaire') ?></h1>
   <section class="filters">
-    <label>Recherche <input type="text" id="q" placeholder="terme ou définition" /></label>
-    <label>Type
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.search') : 'Recherche') ?> <input type="text" id="q" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.glossary_query') : 'terme ou définition') ?>" /></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?>
       <select id="type">
-        <option value="">Tous</option>
-        <option value="acronyme">Acronyme</option>
-        <option value="terme">Terme</option>
+        <option value=""><?= htmlspecialchars(function_exists('t') ? t('labels.all_m') : 'Tous') ?></option>
+        <option value="acronyme"><?= htmlspecialchars(function_exists('t') ? t('glossary.acronym') : 'Acronyme') ?></option>
+        <option value="terme"><?= htmlspecialchars(function_exists('t') ? t('glossary.term') : 'Terme') ?></option>
       </select>
     </label>
-    <button id="btnSearch" class="btn btn-primary">Rechercher</button>
+    <button id="btnSearch" class="btn btn-primary"><?= htmlspecialchars(function_exists('t') ? t('buttons.search') : 'Rechercher') ?></button>
   </section>
 
   <section class="tables">
     <table id="tblGlossaire"><thead>
       <tr>
-        <th data-sort="string">Type</th>
-        <th data-sort="string">Terme</th>
-        <th data-sort="string">Définition</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.term') : 'Terme') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.definition') : 'Définition') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>

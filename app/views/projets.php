@@ -1,31 +1,30 @@
-<?php $pageTitle = 'Projets d\'investissement — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-  <h1>Projets d'investissement</h1>
-  <p class="section-desc">Explorez les projets d’investissement publics par secteur, source de financement et catégorie budgétaire. Utilisez les filtres pour cibler une thématique (énergie, agriculture, infrastructures, santé, éducation, etc.).</p>
+<?php $pageTitle = (function_exists('t') ? t('page.projets.title') : "Projets d'investissement") . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+  <h1><?= htmlspecialchars(function_exists('t') ? t('page.projets.title') : "Projets d'investissement") ?></h1>
   <section class="filters">
-    <label>Année <select id="year"></select></label>
-    <label>Secteur <input type="text" id="f_secteur" placeholder="Énergie, Agriculture..." /></label>
-    <label>Source
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.sector') : 'Secteur') ?> <input type="text" id="f_secteur" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.sector_example') : 'Énergie, Agriculture...') ?>" /></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.source') : 'Source') ?>
       <select id="f_source">
-        <option value="">Toutes</option>
-        <option value="interne">Interne</option>
-        <option value="externe">Externe</option>
-        <option value="mixte">Mixte</option>
+        <option value=""><?= htmlspecialchars(function_exists('t') ? t('labels.all_f') : 'Toutes') ?></option>
+        <option value="interne">interne</option>
+        <option value="externe">externe</option>
+        <option value="mixte">mixte</option>
       </select>
     </label>
-    <label>Catégorie (ID) <input type="number" id="f_cat" min="1" placeholder="ex: 26" /></label>
-    <label>Recherche <input type="text" id="q" placeholder="Nom ou description" /></label>
-    <button id="btnSearch" class="btn btn-primary">Filtrer</button>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.category_id') : 'Catégorie (ID)') ?> <input type="number" id="f_cat" min="1" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.category_example') : 'ex: 26') ?>" /></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.search') : 'Recherche') ?> <input type="text" id="q" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.search_name_desc') : 'Nom ou description') ?>" /></label>
+    <button id="btnSearch" class="btn btn-primary"><?= htmlspecialchars(function_exists('t') ? t('buttons.filter') : 'Filtrer') ?></button>
   </section>
 
   <section class="tables">
     <table id="tblProjets"><thead>
       <tr>
-        <th data-sort="string">Nom</th>
-        <th data-sort="string">Secteur</th>
-        <th data-sort="string">Source</th>
-        <th data-sort="number">Montant</th>
-        <th data-sort="number">Catégorie</th>
-        <th data-sort="string">Description</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.name') : 'Nom') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.sector') : 'Secteur') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.source') : 'Source') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.amount') : 'Montant') ?></th>
+        <th data-sort="number">ID <?= htmlspecialchars(function_exists('t') ? t('labels.category') : 'Catégorie') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.description') : 'Description') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>

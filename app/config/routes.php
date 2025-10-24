@@ -40,6 +40,20 @@ $router->get('/api/glossaire', [ApiController::class, 'glossaire']);
 $router->get('/api/search-recettes', [ApiController::class, 'searchRecettes']);
 $router->get('/api/search-depenses', [ApiController::class, 'searchDepenses']);
 
+// Lang switcher (persist in session then redirect back)
+$router->post('/lang', function() use ($app) {
+    $lang = $_POST['lang'] ?? 'fr';
+    if (function_exists('set_lang')) { set_lang($lang); }
+    $back = $_SERVER['HTTP_REFERER'] ?? '/';
+    $app->redirect($back);
+});
+$router->get('/lang', function() use ($app) {
+    $lang = $_GET['lang'] ?? 'fr';
+    if (function_exists('set_lang')) { set_lang($lang); }
+    $back = $_SERVER['HTTP_REFERER'] ?? '/';
+    $app->redirect($back);
+});
+
 // Page d'accueil minimaliste (consommera l'API via JS)
 $router->get('/', function() use ($app) {
 	$app->render('home.php');

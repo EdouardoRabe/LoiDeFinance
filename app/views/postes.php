@@ -1,17 +1,17 @@
-<?php $pageTitle = 'Postes budgétaires — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-  <h1>Postes budgétaires</h1>
+<?php $pageTitle = (function_exists('t') ? t('page.postes.title') : 'Postes budgétaires') . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+  <h1><?= htmlspecialchars(function_exists('t') ? t('page.postes.title') : 'Postes budgétaires') ?></h1>
   <section class="filters">
-    <label>Année <select id="year"></select></label>
-    <label>Catégorie (ID) <input type="number" id="cat" min="1" placeholder="ex: 20 (Éducation)" /></label>
-    <button id="btnSearch" class="btn btn-primary">Filtrer</button>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.category_id') : 'Catégorie (ID)') ?> <input type="number" id="cat" min="1" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.category_example') : 'ex: 20') ?>" /></label>
+    <button id="btnSearch" class="btn btn-primary"><?= htmlspecialchars(function_exists('t') ? t('buttons.filter') : 'Filtrer') ?></button>
   </section>
 
   <section class="tables">
     <table id="tblPostes"><thead>
       <tr>
-        <th data-sort="string">Catégorie</th>
-        <th data-sort="number">Nombre</th>
-        <th data-sort="string">Description</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.category') : 'Catégorie') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.count') : 'Nombre') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.description') : 'Description') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>

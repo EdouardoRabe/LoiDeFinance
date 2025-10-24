@@ -1,42 +1,41 @@
-<?php $pageTitle = 'Dette — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-  <h1>Dette</h1>
-  <p class="section-desc">Consultez la dette publique par type (intérieure, extérieure) et comparez deux années pour suivre l’évolution des intérêts et du principal conformément aux informations de la Loi de Finances.</p>
+<?php $pageTitle = (function_exists('t') ? t('page.dette.title') : 'Dette') . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+  <h1><?= htmlspecialchars(function_exists('t') ? t('page.dette.title') : 'Dette') ?></h1>
   <section class="filters">
-    <label>Année <select id="year"></select></label>
-    <label>Type
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?>
       <select id="type">
-        <option value="">Tous</option>
-        <option value="interieure">Intérieure</option>
-        <option value="exterieure">Extérieure</option>
+        <option value=""><?= htmlspecialchars(function_exists('t') ? t('labels.all_m') : 'Tous') ?></option>
+        <option value="interieure"><?= htmlspecialchars(function_exists('t') ? t('debt.inner') : 'Intérieure') ?></option>
+        <option value="exterieure"><?= htmlspecialchars(function_exists('t') ? t('debt.outer') : 'Extérieure') ?></option>
       </select>
     </label>
   </section>
 
   <section class="tables">
-    <h3>Dette par type</h3>
+    <h3><?= htmlspecialchars(function_exists('t') ? t('page.dette.title') : 'Dette') ?> - <?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></h3>
     <table id="tblDette"><thead>
       <tr>
-        <th data-sort="string">Type</th>
-        <th data-sort="number">Intérêts</th>
-        <th data-sort="number">Principal</th>
-        <th data-sort="number">Taux moyen</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.interests') : 'Intérêts') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.principal') : 'Principal') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.avg_rate') : 'Taux moyen') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>
 
   <section class="filters">
-    <h3>Comparaison</h3>
-    <label>Année 1 <select id="year1"></select></label>
-    <label>Année 2 <select id="year2"></select></label>
+    <h3><?= htmlspecialchars(function_exists('t') ? t('page.comparaison.title') : 'Comparaison multi-années') ?></h3>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year1') : 'Année 1') ?> <select id="year1"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year2') : 'Année 2') ?> <select id="year2"></select></label>
   </section>
   <section class="tables">
     <table id="tblCompare"><thead>
       <tr>
-        <th data-sort="string">Type</th>
-        <th data-sort="number">Intérêts A1</th>
-        <th data-sort="number">Intérêts A2</th>
-        <th data-sort="number">Principal A1</th>
-        <th data-sort="number">Principal A2</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.interests') : 'Intérêts') ?> A1</th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.interests') : 'Intérêts') ?> A2</th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.principal') : 'Principal') ?> A1</th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.principal') : 'Principal') ?> A2</th>
       </tr>
     </thead><tbody></tbody></table>
   </section>

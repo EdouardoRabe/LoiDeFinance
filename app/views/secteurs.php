@@ -1,11 +1,10 @@
-<?php $pageTitle = 'Secteurs & Croissance — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
+<?php $pageTitle = 'Secteurs & Croissance — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
   <h1>Secteurs & Croissance</h1>
-  <p class="section-desc">Consultez la structure sectorielle de l’économie (primaire, secondaire, tertiaire) et l’évolution des sous-secteurs par année. Les taux présentés reflètent les dynamiques de croissance estimées dans la Loi de Finances.</p>
   <section class="filters">
-    <label>Année <select id="year"></select></label>
-    <label>Secteur parent
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.sector') : 'Secteur') ?> parent
       <select id="parent">
-        <option value="">Tous (racine)</option>
+        <option value=""><?= htmlspecialchars(function_exists('t') ? t('labels.all_m') : 'Tous') ?> (racine)</option>
       </select>
     </label>
   </section>
@@ -13,14 +12,14 @@
   <section class="tables">
     <h3>Liste des secteurs</h3>
     <div class="table-actions">
-      <label>Par page
+      <label><?= htmlspecialchars(function_exists('t') ? t('labels.per_page') : 'Par page') ?>
         <select id="pgSizeSecteurs">
           <option>10</option>
           <option selected>20</option>
           <option>50</option>
         </select>
       </label>
-      <button id="csvSecteurs" class="btn btn-secondary">Exporter CSV</button>
+      <button id="csvSecteurs" class="btn btn-secondary"><?= htmlspecialchars(function_exists('t') ? t('labels.export_csv') : 'Exporter CSV') ?></button>
       <div class="pager">
         <button id="prevSecteurs" class="btn">◀</button>
         <span id="infoSecteurs"></span>
@@ -29,10 +28,10 @@
     </div>
     <table id="tblSecteurs"><thead>
       <tr>
-        <th data-sort="string">Nom</th>
-        <th data-sort="string">Type</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.name') : 'Nom') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></th>
         <th data-sort="string">Parent</th>
-        <th data-sort="string">Description</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.description') : 'Description') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>
@@ -40,14 +39,14 @@
   <section class="tables">
     <h3>Croissance sectorielle</h3>
     <div class="table-actions">
-      <label>Par page
+      <label><?= htmlspecialchars(function_exists('t') ? t('labels.per_page') : 'Par page') ?>
         <select id="pgSizeCroissance">
           <option>10</option>
           <option selected>20</option>
           <option>50</option>
         </select>
       </label>
-      <button id="csvCroissance" class="btn btn-secondary">Exporter CSV</button>
+      <button id="csvCroissance" class="btn btn-secondary"><?= htmlspecialchars(function_exists('t') ? t('labels.export_csv') : 'Exporter CSV') ?></button>
       <div class="pager">
         <button id="prevCroissance" class="btn">◀</button>
         <span id="infoCroissance"></span>
@@ -56,8 +55,8 @@
     </div>
     <table id="tblCroissance"><thead>
       <tr>
-        <th data-sort="string">Secteur</th>
-        <th data-sort="number">Taux (%)</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.sector') : 'Secteur') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.rate') : 'Taux (%)') ?></th>
       </tr>
     </thead><tbody></tbody></table>
     <div class="charts">

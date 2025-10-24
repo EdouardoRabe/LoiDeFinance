@@ -12,8 +12,12 @@ function loadTypes() {
   const url = dataset === 'recettes' ? 'api/recette-types' : 'api/depense-types';
   return $.getJSON(url, { annee: firstYear }).then(list => {
     const $t = $('#type');
-    $t.find('option:not([value=""])').remove();
-    list.forEach(v => $t.append(`<option value="${v}">${v}</option>`));
+    $t.find('option:not([value=""]').remove();
+    list.forEach(item => {
+      const v = (item && typeof item === 'object') ? item.value : item;
+      const label = (item && typeof item === 'object') ? item.label : item;
+      $t.append(`<option value="${v}">${label}</option>`);
+    });
   });
 }
 
@@ -24,7 +28,9 @@ function selectedYears() {
 function ensureHeader() {
   const years = selectedYears();
   const $tr = $('#theadRow');
-  let html = '<th>Catégorie</th><th>Type</th>';
+  const catLabel = (window.I18N_LABELS && window.I18N_LABELS.category) || 'Catégorie';
+  const typeLabel = (window.I18N_LABELS && window.I18N_LABELS.type) || 'Type';
+  let html = `<th>${catLabel}</th><th>${typeLabel}</th>`;
   years.forEach(y => { html += `<th>${y}</th>`; });
   $tr.html(html);
 }
@@ -94,8 +100,10 @@ function load() {
 function addYearSelector(yearsList, value) {
   const id = 'y' + Math.random().toString(36).slice(2, 7);
   const $wrap = $('<div class="year-wrap" style="display:flex;gap:6px;align-items:end"></div>');
-  const $label = $(`<label for="${id}">Année <select id="${id}" class="year-select"></select></label>`);
-  const $remove = $('<button class="btn btn-danger" title="Retirer">-</button>').on('click', function() {
+  const yearLabel = (window.I18N_LABELS && window.I18N_LABELS.year) || 'Année';
+  const removeTitle = (window.I18N_LABELS && window.I18N_LABELS.remove) || 'Retirer';
+  const $label = $(`<label for="${id}">${yearLabel} <select id="${id}" class="year-select"></select></label>`);
+  const $remove = $(`<button class="btn btn-danger" title="${removeTitle}">-</button>`).on('click', function() {
     $wrap.remove();
     load();
   });
