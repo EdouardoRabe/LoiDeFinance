@@ -16,6 +16,9 @@ if(file_exists(__DIR__. $ds . 'config.php') === false) {
 // This is important as it connects any static calls to the same $app object
 $app = Flight::app();
 
+// Load i18n helper for translations
+require_once __DIR__ . $ds . '..' . $ds . 'helpers' . $ds . 'i18n.php';
+
 /*
  * Load the config file
  * P.S. When you require a php file and that file returns an array, the array
@@ -42,7 +45,7 @@ require('services.php');
 	$router->get('/', function() {
 		echo 'Hello World!';
 	});
-*/
+ */
 
 /*
  * Load the services file.
@@ -54,7 +57,7 @@ require('services.php');
  * 
  * All the services and how they are configured are setup in the services file.
  * In many cases, services are all attached to something called a "services container"
- * or more simply, a "container". The container manages if you should share the same
+ * or more simply, a "container”. The container manages if you should share the same
  * service, or if you should create a new instance of the service every time you need it.
  * That's a discussion for another day. Suffice to say, that Flight has a basic concept
  *

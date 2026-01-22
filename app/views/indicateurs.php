@@ -1,24 +1,24 @@
-<?php $pageTitle = 'Indicateurs macro — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-  <h1>Indicateurs macro</h1>
-  <p class="section-desc">Consultez les principaux indicateurs macroéconomiques par année (solde global, taux de change, ratios, etc.) et visualisez leurs séries temporelles pour analyser les tendances mentionnées dans la Loi de Finances.</p>
+<?php $pageTitle = (function_exists('t') ? t('page.indicateurs.title') : 'Indicateurs macro') . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+  <h1><?= htmlspecialchars(function_exists('t') ? t('page.indicateurs.title') : 'Indicateurs macro') ?></h1>
+  <p class="section-desc">Consultez les principaux indicateurs macroéconomiques par année et visualisez leurs séries temporelles.</p>
 
   <section class="filters">
-    <label>Année <select id="year"></select></label>
-    <label>Recherche <input type="text" id="q" placeholder="nom contient…" /></label>
-    <button id="btnLoad" class="btn btn-primary">Charger</button>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.search') : 'Recherche') ?> <input type="text" id="q" placeholder="nom contient…" /></label>
+    <button id="btnLoad" class="btn btn-primary"><?= htmlspecialchars(function_exists('t') ? t('buttons.load') : 'Charger') ?></button>
   </section>
 
   <section class="tables">
-    <h3>Liste des indicateurs</h3>
+    <h3><?= htmlspecialchars(function_exists('t') ? t('labels.indicators') : 'Indicateurs') ?></h3>
     <div class="table-actions">
-      <label>Par page
+      <label><?= htmlspecialchars(function_exists('t') ? t('labels.per_page') : 'Par page') ?>
         <select id="pgSizeIndics">
           <option>10</option>
           <option selected>20</option>
           <option>50</option>
         </select>
       </label>
-      <button id="csvIndics" class="btn btn-secondary">Exporter CSV</button>
+      <button id="csvIndics" class="btn btn-secondary"><?= htmlspecialchars(function_exists('t') ? t('labels.export_csv') : 'Exporter CSV') ?></button>
       <div class="pager">
         <button id="prevIndics" class="btn">◀</button>
         <span id="infoIndics"></span>
@@ -27,38 +27,38 @@
     </div>
     <table id="tblIndics"><thead>
       <tr>
-        <th data-sort="string">Nom</th>
-        <th data-sort="number">Valeur</th>
-        <th data-sort="string">Unité</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.name') : 'Nom') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.value') : 'Valeur') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.unit') : 'Unité') ?></th>
       </tr>
     </thead><tbody></tbody></table>
   </section>
 
   <section class="filters">
     <h3>Séries multi-années</h3>
-    <label>Années <select id="years" multiple size="4"></select></label>
-    <label>Indicateurs (séparer par ";") <input type="text" id="names" placeholder="ex: Solde global (base caisse); Taux de change Dollars/Ariary" /></label>
-    <button id="btnSeries" class="btn btn-secondary">Afficher séries</button>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.years') : 'Années') ?> <select id="years" multiple size="4"></select></label>
+    <label><?= htmlspecialchars(function_exists('t') ? t('labels.indicators') : 'Indicateurs') ?> <input type="text" id="names" placeholder="<?= htmlspecialchars(function_exists('t') ? t('placeholders.indicator_names') : 'ex: Solde global (base caisse); Taux de change Dollars/Ariary') ?>" /></label>
+    <button id="btnSeries" class="btn btn-secondary"><?= htmlspecialchars(function_exists('t') ? t('labels.show_series') : 'Afficher séries') ?></button>
   </section>
 
   <section class="tables">
     <table id="tblSeries"><thead>
       <tr>
-        <th data-sort="string">Nom</th>
-        <th data-sort="number">Année</th>
-        <th data-sort="number">Valeur</th>
-        <th data-sort="string">Unité</th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.name') : 'Nom') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?></th>
+        <th data-sort="number"><?= htmlspecialchars(function_exists('t') ? t('labels.value') : 'Valeur') ?></th>
+        <th data-sort="string"><?= htmlspecialchars(function_exists('t') ? t('labels.unit') : 'Unité') ?></th>
       </tr>
     </thead><tbody></tbody></table>
     <div class="table-actions">
-      <label>Par page
+      <label><?= htmlspecialchars(function_exists('t') ? t('labels.per_page') : 'Par page') ?>
         <select id="pgSizeSeries">
           <option>10</option>
           <option selected>20</option>
           <option>50</option>
         </select>
       </label>
-      <button id="csvSeries" class="btn btn-secondary">Exporter CSV</button>
+      <button id="csvSeries" class="btn btn-secondary"><?= htmlspecialchars(function_exists('t') ? t('labels.export_csv') : 'Exporter CSV') ?></button>
       <div class="pager">
         <button id="prevSeries" class="btn">◀</button>
         <span id="infoSeries"></span>
