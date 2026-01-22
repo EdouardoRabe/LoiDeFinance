@@ -231,4 +231,245 @@ class BudgetModel
         $id = $stmt->fetchColumn();
         return $id ? (int)$id : null;
     }
+
+
+    // ==========================
+    // Extensions pour schéma étendu (secteurs, croissance, projets, dette, postes, indicateurs, glossaire)
+    // ==========================
+
+    public function getSecteurs(?int $parentId = null): array
+    {
+        if ($parentId === null) {
+            $stmt = $this->pdo->query("SELECT id, nom, type, parent_id, description FROM secteur WHERE parent_id IS NULL ORDER BY id");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        $stmt = $this->pdo->prepare("SELECT id, nom, type, parent_id, description FROM secteur WHERE parent_id = ? ORDER BY id");
+        $stmt->execute([$parentId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getCroissanceSecteur(int $annee, ?int $secteurId = null): array
+    {
+        $params = [$annee];
+        $sql = "SELECT s.id AS secteur_id, s.nom AS secteur, s.type, s.parent_id,
+                       cs.taux
+                FROM croissance_secteur cs
+                JOIN annee a ON a.id = cs.id_annee
+                JOIN secteur s ON s.id = cs.id_secteur
+                WHERE a.annee = ?";
+        if ($secteurId !== null) {
+            $sql .= " AND s.id = ?";
+            $params[] = $secteurId;
+        }
+        $sql .= " ORDER BY COALESCE(s.parent_id, s.id), s.id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getProjetsInvestissement(
+        int $annee,
+        ?string $secteur = null,
+        ?string $source = null,
+        ?int $categorieDepenseId = null,
+        ?string $search = null,
+        ?string $sort = null
+    ): array {
+        $params = [$annee];
+        $filters = [];
+        if ($secteur) { $filters[] = 'pi.secteur = ?'; $params[] = $secteur; }
+        if ($source) { $filters[] = 'pi.source_financement = ?'; $params[] = $source; }
+        if ($categorieDepenseId) { $filters[] = 'pi.id_categorie_depense = ?'; $params[] = $categorieDepenseId; }
+        if ($search) { $filters[] = '(pi.nom LIKE ? OR pi.description LIKE ?)'; $params[] = "%$search%"; $params[] = "%$search%"; }
+
+        $sql = "SELECT pi.id, pi.nom, pi.description, pi.id_categorie_depense, pi.montant, pi.source_financement, pi.secteur
+                FROM projet_investissement pi
+                JOIN annee a ON a.id = pi.id_annee
+                WHERE a.annee = ?";
+        if (!empty($filters)) { $sql .= ' AND ' . implode(' AND ', $filters); }
+
+        $allowedSort = ['nom', 'montant', 'source_financement', 'secteur'];
+        if ($sort && in_array($sort, $allowedSort, true)) { $sql .= " ORDER BY pi.$sort"; }
+        else { $sql .= " ORDER BY pi.secteur, pi.nom"; }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getDette(int $annee, ?string $type = null): array
+    {
+        $params = [$annee];
+        $sql = "SELECT d.type, d.interets, d.principal, d.taux_moyen
+                FROM dette d
+                JOIN annee a ON a.id = d.id_annee
+                WHERE a.annee = ?";
+        if ($type) { $sql .= ' AND d.type = ?'; $params[] = $type; }
+        $sql .= ' ORDER BY d.type';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getPostesBudgetaires(int $annee, ?int $categorieDepenseId = null): array
+    {
+        $params = [$annee];
+        $sql = "SELECT pb.id, cd.id AS categorie_id, cd.nom AS categorie, pb.nombre, pb.description
+                FROM poste_budgetaire pb
+                JOIN categorie_depense cd ON cd.id = pb.id_categorie_depense
+                JOIN annee a ON a.id = pb.id_annee
+                WHERE a.annee = ?";
+        if ($categorieDepenseId) { $sql .= ' AND cd.id = ?'; $params[] = $categorieDepenseId; }
+        $sql .= ' ORDER BY cd.nom';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getIndicateursMacro(int $annee, ?string $nomLike = null): array
+    {
+        $params = [$annee];
+        $sql = "SELECT im.id, im.nom, im.valeur, im.unite
+                FROM indicateur_macro im
+                JOIN annee a ON a.id = im.id_annee
+                WHERE a.annee = ?";
+        if ($nomLike) { $sql .= ' AND im.nom LIKE ?'; $params[] = "%$nomLike%"; }
+        $sql .= ' ORDER BY im.nom';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getIndicateursSerie(array $noms, array $annees): array
+    {
+        if (empty($noms) || empty($annees)) { return []; }
+        $namePlaceholders = implode(',', array_fill(0, count($noms), '?'));
+        $yearPlaceholders = implode(',', array_fill(0, count($annees), '?'));
+        $params = array_merge($annees, $noms); // annes first for a.annee IN, then noms for im.nom IN
+        $sql = "SELECT a.annee, im.nom, im.valeur, im.unite
+                FROM indicateur_macro im
+                JOIN annee a ON a.id = im.id_annee
+                WHERE a.annee IN ($yearPlaceholders)
+                  AND im.nom IN ($namePlaceholders)
+                ORDER BY im.nom, a.annee";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getGlossaire(?string $q = null, ?string $type = null): array
+    {
+        $params = [];
+        $sql = "SELECT id, terme, definition, type FROM glossaire WHERE 1=1";
+        if ($q) { $sql .= ' AND (terme LIKE ? OR definition LIKE ?)'; $params[] = "%$q%"; $params[] = "%$q%"; }
+        if ($type) { $sql .= ' AND type = ?'; $params[] = $type; }
+        $sql .= ' ORDER BY type, terme';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function listCategoriesRecette(): array
+    {
+        $stmt = $this->pdo->query("SELECT id, nom, description FROM categorie_recette ORDER BY id");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function listCategoriesDepense(): array
+    {
+        $stmt = $this->pdo->query("SELECT id, nom, description FROM categorie_depense ORDER BY id");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function searchRecettes(
+        ?int $annee = null,
+        ?string $type = null,
+        ?int $categorieId = null,
+        ?string $q = null,
+        ?string $sort = null
+    ): array {
+        $params = [];
+        $sql = "SELECT a.annee, r.type, cr.id AS categorie_id, cr.nom AS categorie, r.montant
+                FROM recette r
+                JOIN categorie_recette cr ON cr.id = r.id_categorie
+                JOIN annee a ON a.id = r.id_annee
+                WHERE 1=1";
+        if ($annee !== null) { $sql .= ' AND a.annee = ?'; $params[] = $annee; }
+        if ($type) { $sql .= ' AND r.type = ?'; $params[] = $type; }
+        if ($categorieId) { $sql .= ' AND cr.id = ?'; $params[] = $categorieId; }
+        if ($q) { $sql .= ' AND (cr.nom LIKE ? OR cr.description LIKE ?)'; $params[] = "%$q%"; $params[] = "%$q%"; }
+        $allowed = ['annee','type','categorie','montant'];
+        if ($sort && in_array($sort, $allowed, true)) { $sql .= " ORDER BY $sort"; }
+        else { $sql .= ' ORDER BY a.annee, r.type, cr.id'; }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function searchDepenses(
+        ?int $annee = null,
+        ?string $type = null,
+        ?int $categorieId = null,
+        ?string $q = null,
+        ?string $sort = null
+    ): array {
+        $params = [];
+        $sql = "SELECT a.annee, d.type, cd.id AS categorie_id, cd.nom AS categorie, d.montant
+                FROM depense d
+                JOIN categorie_depense cd ON cd.id = d.id_categorie
+                JOIN annee a ON a.id = d.id_annee
+                WHERE 1=1";
+        if ($annee !== null) { $sql .= ' AND a.annee = ?'; $params[] = $annee; }
+        if ($type) { $sql .= ' AND d.type = ?'; $params[] = $type; }
+        if ($categorieId) { $sql .= ' AND cd.id = ?'; $params[] = $categorieId; }
+        if ($q) { $sql .= ' AND (cd.nom LIKE ? OR cd.description LIKE ?)'; $params[] = "%$q%"; $params[] = "%$q%"; }
+        $allowed = ['annee','type','categorie','montant'];
+        if ($sort && in_array($sort, $allowed, true)) { $sql .= " ORDER BY $sort"; }
+        else { $sql .= ' ORDER BY a.annee, d.type, cd.id'; }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function compareDette(int $annee1, int $annee2): array
+    {
+        $sql = "SELECT d.type,
+                       SUM(CASE WHEN a.annee = ? THEN d.interets ELSE 0 END) AS interets1,
+                       SUM(CASE WHEN a.annee = ? THEN d.interets ELSE 0 END) AS interets2,
+                       SUM(CASE WHEN a.annee = ? THEN d.principal ELSE 0 END) AS principal1,
+                       SUM(CASE WHEN a.annee = ? THEN d.principal ELSE 0 END) AS principal2
+                FROM dette d
+                JOIN annee a ON a.id = d.id_annee
+                WHERE a.annee IN (?, ?)
+                GROUP BY d.type
+                ORDER BY d.type";
+        $params = [$annee1, $annee2, $annee1, $annee2, $annee1, $annee2];
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function compareCroissanceSecteur(int $annee1, int $annee2, ?int $secteurId = null): array
+    {
+        $params = [$annee1, $annee2, $annee1, $annee2];
+        $sql = "SELECT s.id AS secteur_id, s.nom AS secteur, s.parent_id,
+                       SUM(CASE WHEN a.annee = ? THEN cs.taux ELSE 0 END) AS taux1,
+                       SUM(CASE WHEN a.annee = ? THEN cs.taux ELSE 0 END) AS taux2
+                FROM croissance_secteur cs
+                JOIN annee a ON a.id = cs.id_annee
+                JOIN secteur s ON s.id = cs.id_secteur
+                WHERE a.annee IN (?, ?)";
+        if ($secteurId !== null) { $sql .= ' AND s.id = ?'; $params[] = $secteurId; }
+        $sql .= " GROUP BY s.id, s.nom, s.parent_id ORDER BY COALESCE(s.parent_id, s.id), s.id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getAnnees(): array
+    {
+        // alias plus lisible de getYears()
+        return $this->getYears();
+    }
+
 }

@@ -1,10 +1,10 @@
-<?php $pageTitle = 'Dispositions — Loi de Finances'; include __DIR__ . '/partials/header.php'; ?>
-    <h1>Dispositions fiscales</h1>
+<?php $pageTitle = (function_exists('t') ? t('page.dispositions.title') : 'Dispositions fiscales') . ' — ' . (function_exists('t') ? t('app.title') : 'Loi de Finances'); include __DIR__ . '/partials/header.php'; ?>
+    <h1><?= htmlspecialchars(function_exists('t') ? t('page.dispositions.title') : 'Dispositions fiscales') ?></h1>
     <section class="filters">
-      <label>Année <select id="year"></select></label>
+      <label><?= htmlspecialchars(function_exists('t') ? t('labels.year') : 'Année') ?> <select id="year"></select></label>
     </section>
     <section class="tables">
-      <table id="tbl"><thead><tr><th>Type</th><th>Description</th></tr></thead><tbody></tbody></table>
+      <table id="tbl"><thead><tr><th><?= htmlspecialchars(function_exists('t') ? t('labels.type') : 'Type') ?></th><th><?= htmlspecialchars(function_exists('t') ? t('labels.description') : 'Description') ?></th></tr></thead><tbody></tbody></table>
     </section>
   <script>
     function load(){ const annee=$('#year').val();

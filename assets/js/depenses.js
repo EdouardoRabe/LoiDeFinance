@@ -12,8 +12,12 @@ function loadTypes() {
   const annee = $('#year').val();
   return $.getJSON('api/depense-types', { annee }).then(list => {
     const $t = $('#type');
-    $t.find('option:not([value=""])').remove();
-    list.forEach(v => $t.append(`<option value="${v}">${v}</option>`));
+    $t.find('option:not([value=""]').remove();
+    list.forEach(item => {
+      const v = (item && typeof item === 'object') ? item.value : item;
+      const label = (item && typeof item === 'object') ? item.label : item;
+      $t.append(`<option value="${v}">${label}</option>`);
+    });
   });
 }
 
@@ -37,10 +41,30 @@ function load() {
         labels,
         datasets: [{
           data,
-          backgroundColor: ['#2d6cdf', '#10b981', '#f59e0b', '#ef4444']
+          backgroundColor: ['#2d6cdf', '#10b981', '#f59e0b', '#ef4444'],
+          borderWidth: 0,
+          hoverOffset: 6
         }]
       },
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: 10 },
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => {
+                const total = ctx.dataset.data.reduce((a,b)=>a+Number(b||0),0);
+                const val = Number(ctx.parsed) || 0;
+                const pct = total ? (val*100/total) : 0;
+                return `${ctx.label}: ${fmt(val)} (${pct.toFixed(1)}%)`;
+              }
+            }
+          }
+        },
+        animation: { duration: 500, easing: 'easeOutQuart' }
+      }
     });
   }).fail(jq => console.error('api/depenses failed', jq.status, jq.responseText));
 }
